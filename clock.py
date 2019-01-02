@@ -3,6 +3,7 @@
 
 import time
 import datetime
+import calendar
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix
 
@@ -50,9 +51,30 @@ MyOffsetCanvas = MyMatrix.CreateFrameCanvas()
 while(1):
     currentDT = datetime.datetime.now()
 
-    fulldate = currentDT.strftime("%d-%m-%y  %A")
-    if currentDT.day < 10:
-        fulldate = fulldate[1:]
+    today = currentDT
+    # Calculations for % through year
+    day_of_year = (today - datetime.datetime(today.year, 1, 1)).days + 1
+    current_year =  today.year
+
+    if calendar.isleap(today.year):
+        days_in_year = 366
+    else:
+        days_in_year = 365
+
+    percent_of_year = round((float(day_of_year) / float(days_in_year) * float(100)),2)
+
+    percent_through_year = ("%s is %s%% complete!" % (current_year, percent_of_year))
+
+
+    if currentDT.hour < 23:
+        scrollColour = BLUE
+        fulldate = currentDT.strftime("%d-%m-%y  %A")
+        fulldate = str(fulldate) + "  " + percent_through_year
+        #if currentDT.day < 10:
+        #    fulldate = fulldate[1:]
+    else:
+        scrollColour = PURPLE
+        fulldate = "GO HOME!!!"
 
     sizeofdate = len(fulldate)*7
 
@@ -80,8 +102,8 @@ while(1):
 
     pmam = currentDT.strftime("%p")
 
-    graphics.DrawText(MyOffsetCanvas, fonts['7x13B'], scroller, 28, BLUE,
-                      fulldate)
+    graphics.DrawText(MyOffsetCanvas, fonts['7x13B'], scroller, 28,
+                      scrollColour, fulldate)
 
     graphics.DrawText(MyOffsetCanvas, fonts['9x18B'], sizeoftime, 14, RED,
                       thetime)
